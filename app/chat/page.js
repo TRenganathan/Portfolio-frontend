@@ -154,7 +154,7 @@ const ChatPage = () => {
                     >
                       {user?.profile?.profilePicture ? (
                         <Image
-                          src={`http://localhost:8080/${user?.profile?.profilePicture}`}
+                          src={`${BASE_URL1}/${user?.profile?.profilePicture}`}
                           alt="profile-img"
                           height={50}
                           width={50}
@@ -197,7 +197,7 @@ const ChatPage = () => {
                   <div className="curor-pointer flex flex-wrap gap-2 items-center my-2 border-b-2 border-r-white border-white-100 p-4 bg-[#3b3e46] rounded">
                     {currentChatUser?.profile?.profilePicture ? (
                       <Image
-                        src={`http://localhost:8080/${currentChatUser?.profile?.profilePicture}`}
+                        src={`${BASE_URL1}/${currentChatUser?.profile?.profilePicture}`}
                         alt="profile-img"
                         height={50}
                         width={50}

@@ -142,7 +142,7 @@ const UsersList = () => {
                   <div className="mb-4">
                     {user?.profile?.profilePicture ? (
                       <Image
-                        src={`http://localhost:8080/${user?.profile?.profilePicture}`}
+                        src={`${BASE_URL1}/${user?.profile?.profilePicture}`}
                         alt="profile-img"
                         height={100}
                         width={100}
