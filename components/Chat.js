@@ -57,7 +57,7 @@ export const Chat = ({ getRecentChats }) => {
         message: message,
       };
       const { data } = await axios.post(`${BASE_URL}/chat/send`, newData);
-      getRecentChats();
+      getRecentChats(userData?.userId);
     } catch (error) {}
   };
   return (

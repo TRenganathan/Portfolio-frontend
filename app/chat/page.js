@@ -55,10 +55,9 @@ const ChatPage = () => {
   useEffect(() => {
     getAllUsers();
     if (userData) {
-      getRecentChats(userData.userId);
+      getRecentChats(userData?.userId);
     }
-  }, [userData]);
-
+  }, []);
   const startChat = (user) => {
     setCurrentChatUser(user);
     const sortedIds = [userData?.userId, user?._id].sort();
