@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { BASE_URL, BASE_URL1, IMAGE_BASE_URL } from "../data";
+import { BASE_URL, BASE_URL1 } from "../data";
 import { useRouter } from "next/navigation";
 import { getDecryptedCookie } from "../lib/cookiesData/cookiesdata";
 import io from "socket.io-client";
 import { Meteors } from "./../components/ui/meteors";
-import { userContext } from "../app/layout";
+
 import {
   Dialog,
   DialogActions,
@@ -13,6 +13,7 @@ import {
   DialogTitle,
 } from "@mui/material";
 import Image from "next/image";
+import userContext from "../lib/context/userContext";
 const socket = io(`${BASE_URL1}`, {
   withCredentials: true,
 });
@@ -53,7 +54,6 @@ const UsersList = () => {
       setIsLoginModelOpen(true);
     }
   };
-  console.log(IMAGE_BASE_URL, "IMAGE_BASE_URLIMAGE_BASE_URL");
   useEffect(() => {
     if (userData) {
       socket.emit("join", {

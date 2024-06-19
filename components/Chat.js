@@ -1,10 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
 import io from "socket.io-client";
 import { getDecryptedCookie } from "./../lib/cookiesData/cookiesdata";
-import { userContext } from "../app/layout";
+
 import { toast } from "react-toastify";
 import axios from "axios";
 import { BASE_URL, BASE_URL1 } from "../data";
+import userContext from "../lib/context/userContext";
 const socket = io(`${BASE_URL1}`, {
   withCredentials: true,
 });

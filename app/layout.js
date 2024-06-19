@@ -9,6 +9,7 @@ import "react-toastify/dist/ReactToastify.css";
 import SessionProvider from "./SessionProvider";
 import { createContext, useState } from "react";
 import UserUserNotify from "./../lib/userUserNotify";
+import userContext from "./../lib/context/userContext";
 const inter = Inter({ subsets: ["latin"] });
 
 // export const metadata = {
@@ -16,7 +17,6 @@ const inter = Inter({ subsets: ["latin"] });
 //   description: "Modern & Minimal JS Mastery Portfolio",
 // };
 
-export const userContext = createContext();
 export default function RootLayout({ children }) {
   const {
     notifications,

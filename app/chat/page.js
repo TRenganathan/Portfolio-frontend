@@ -2,7 +2,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Chat } from "./../../components/Chat";
 import { useRouter } from "next/navigation";
-import { userContext } from "../layout";
+
 import { IoNotificationsOffSharp } from "react-icons/io5";
 import { TbCategoryPlus } from "react-icons/tb";
 import { getDecryptedCookie } from "../../lib/cookiesData/cookiesdata";
@@ -13,6 +13,7 @@ import Image from "next/image";
 import { Spotlight } from "../../components/ui/SpotLight";
 import FloatingNavbar from "../../components/ui/FloatingNavbar";
 import { FaArrowLeft } from "react-icons/fa6";
+import userContext from "../../lib/context/userContext";
 const socket = io(`${BASE_URL1}`, {
   withCredentials: true,
 });

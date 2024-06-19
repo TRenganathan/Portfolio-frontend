@@ -14,7 +14,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { HoveredLink, Menu, MenuItem } from "./navbar-menu";
 import { signOut, useSession } from "next-auth/react";
 import AddPassword from "./../AddPassword";
-import { userContext } from "../../app/layout";
+
 const FloatingNavbar = () => {
   const { data: session, status } = useSession();
 
