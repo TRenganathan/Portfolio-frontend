@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { BASE_URL, IMAGE_BASE_URL } from "../data";
+import { BASE_URL, BASE_URL1, IMAGE_BASE_URL } from "../data";
 import { useRouter } from "next/navigation";
 import { getDecryptedCookie } from "../lib/cookiesData/cookiesdata";
 import io from "socket.io-client";
@@ -13,7 +13,7 @@ import {
   DialogTitle,
 } from "@mui/material";
 import Image from "next/image";
-const socket = io("http://localhost:8080", {
+const socket = io(`${BASE_URL1}`, {
   withCredentials: true,
 });
 const UsersList = () => {

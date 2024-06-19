@@ -8,7 +8,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import SessionProvider from "./SessionProvider";
 import { createContext, useState } from "react";
-import userUserNotify from "./../lib/userUserNotify";
+import UserUserNotify from "./../lib/userUserNotify";
 const inter = Inter({ subsets: ["latin"] });
 
 // export const metadata = {
@@ -25,7 +25,7 @@ export default function RootLayout({ children }) {
     setMessages,
     activeChatroomId,
     setActiveChatroomId,
-  } = userUserNotify();
+  } = UserUserNotify();
   const [currentChatUser, setCurrentChatUser] = useState(null);
   return (
     <html lang="en" suppressHydrationWarning>

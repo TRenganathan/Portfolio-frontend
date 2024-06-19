@@ -1,5 +1,5 @@
 export const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-export const IMAGE_BASE_URL = process.env.BASE_URL_FOR_IMAGE;
+export const BASE_URL1 = process.env.NEXT_PUBLIC_BASE_URL1;
 export const navItems = [
   { name: "About", link: "#about" },
   { name: "Projects", link: "#projects" },

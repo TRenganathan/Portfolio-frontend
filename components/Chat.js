@@ -4,8 +4,8 @@ import { getDecryptedCookie } from "./../lib/cookiesData/cookiesdata";
 import { userContext } from "../app/layout";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { BASE_URL } from "../data";
-const socket = io("http://localhost:8080", {
+import { BASE_URL, BASE_URL1 } from "../data";
+const socket = io(`${BASE_URL1}`, {
   withCredentials: true,
 });
 

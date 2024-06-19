@@ -7,19 +7,16 @@ import { IoNotificationsOffSharp } from "react-icons/io5";
 import { TbCategoryPlus } from "react-icons/tb";
 import { getDecryptedCookie } from "../../lib/cookiesData/cookiesdata";
 import axios from "axios";
-import { BASE_URL, IMAGE_BASE_URL } from "../../data/";
+import { BASE_URL, BASE_URL1 } from "../../data/";
 import { io } from "socket.io-client";
 import Image from "next/image";
 import { Spotlight } from "../../components/ui/SpotLight";
 import FloatingNavbar from "../../components/ui/FloatingNavbar";
 import { FaArrowLeft } from "react-icons/fa6";
-const socket = io("http://localhost:8080", {
+const socket = io(`${BASE_URL1}`, {
   withCredentials: true,
 });
-const ChatPage = ({ params }) => {
-  if (!params) {
-    return <div>Loading</div>;
-  }
+const ChatPage = () => {
   const router = useRouter();
 
   const {
@@ -33,17 +30,20 @@ const ChatPage = ({ params }) => {
     setCurrentChatUser,
   } = useContext(userContext);
   const [users, setUsers] = useState([]);
+  const [recentChats, setRecentChats] = useState([]);
+  const getCookies = getDecryptedCookie("userData");
+  const userData = getCookies ? JSON.parse(getCookies) : null;
   const getAllUsers = async () => {
     try {
       const { data } = await axios.get(`${BASE_URL}/user`);
       setUsers(data?.data);
     } catch (error) {}
   };
-  const [recentChats, setRecentChats] = useState([]);
-  const getRecentChats = async () => {
+
+  const getRecentChats = async (userId) => {
     try {
       const { data } = await axios.get(
-        `${BASE_URL}/chat/recent-chats/userId/${userData?.userId}`
+        `${BASE_URL}/chat/recent-chats/userId/${userId}`
       );
       if (data) {
         setRecentChats(data?.data);
@@ -53,11 +53,11 @@ const ChatPage = ({ params }) => {
 
   useEffect(() => {
     getAllUsers();
-    getRecentChats();
-  }, []);
+    if (userData) {
+      getRecentChats(userData.userId);
+    }
+  }, [userData]);
 
-  const getCookies = getDecryptedCookie("userData");
-  const userData = getCookies ? JSON.parse(getCookies) : null;
   const startChat = (user) => {
     setCurrentChatUser(user);
     const sortedIds = [userData?.userId, user?._id].sort();
@@ -78,7 +78,9 @@ const ChatPage = ({ params }) => {
     }
   };
   useEffect(() => {
-    fetchMessages();
+    if (activeChatroomId) {
+      fetchMessages();
+    }
   }, [activeChatroomId]);
   useEffect(() => {
     if (userData) {
@@ -125,17 +127,7 @@ const ChatPage = ({ params }) => {
           >
             <FaArrowLeft />
           </button>
-          {/* <div className="flex flex-wrap justify-between rounded-3xl bg-[#23262f]  p-[18px]">
-            <h2 className="font-semibold text-[25px]">Chats</h2>
-            <div className="flex flex-wrap gap-2 items-center">
-              <button className="rounded py-[6px] px-[15px] text-white text-[13px] text-center bg-[#2f80ed]">
-                + new chat
-              </button>
-              <IoNotificationsOffSharp />
-              <div className="w-8 h-8 rounded-full bg-white-200"></div>
-              <h6 className="font-bold text-[14px] text-white">vijay</h6>
-            </div>
-          </div> */}
+
           <div className="flex flex-wrap gap-2 justify-between">
             <div className=" bg-[#23262f]  p-[15px] rounded max-w-[400px] mt-5 flex-auto max-h-[650px] overflow-y-auto z-10">
               <div className="flex justify-between flex-wrap items-center">
@@ -263,7 +255,7 @@ const ChatPage = ({ params }) => {
                 </>
               ) : (
                 <p className="flex items-center justify-center h-full ">
-                  New Chat
+                  + New Chat
                 </p>
               )}
             </div>
