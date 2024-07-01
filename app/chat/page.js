@@ -87,7 +87,7 @@ const ChatPage = () => {
   useEffect(() => {
     if (userData) {
       socket.emit("join", {
-        userId: userData.userId,
+        userId: userData?.userId,
         chatroomId: `user_${userData.userId}`,
       });
 
@@ -120,7 +120,7 @@ const ChatPage = () => {
         `Registering peer ID: ${id} in chatroom: ${activeChatroomId}`
       );
       socket.emit("join-chatroom", {
-        userId: userData.userId,
+        userId: userData?.userId,
         peerId: id,
         chatroomId: activeChatroomId,
       });
@@ -151,7 +151,7 @@ const ChatPage = () => {
     return () => {
       socket.off("incoming-call");
     };
-  }, [activeChatroomId, userData.userId]);
+  }, [activeChatroomId, userData?.userId]);
 
   const startCall = () => {
     console.log(`Initiating call in chatroom: ${activeChatroomId}`);
@@ -199,7 +199,7 @@ const ChatPage = () => {
       peerInstance.current.on("open", (id) => {
         setPeerId(id);
         socket.emit("join-chatroom", {
-          userId: userData.userId,
+          userId: userData?.userId,
           peerId: id,
           chatroomId: activeChatroomId,
         });
@@ -383,9 +383,9 @@ const ChatPage = () => {
                           <div
                             key={index}
                             className={
-                              msg.userId === userData?.userId
+                              msg?.userId === userData?.userId
                                 ? "my-message"
-                                : msg.user === userData?.userId
+                                : msg?.user === userData?.userId
                                 ? "my-message"
                                 : "other-message"
                             }
