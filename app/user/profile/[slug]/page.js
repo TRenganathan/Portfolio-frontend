@@ -10,7 +10,7 @@ import ProfileForm from "./../../../../components/ProfileModel";
 import { getDecryptedCookie } from "../../../../lib/cookiesData/cookiesdata";
 import { usePathname } from "next/navigation";
 import axios from "axios";
-import { BASE_URL } from "../../../../data";
+import { BASE_URL, BASE_URL1 } from "../../../../data";
 import { IoPlayBackCircleOutline } from "react-icons/io5";
 
 import Image from "next/image";
@@ -142,7 +142,6 @@ const UserProfilePage = () => {
       }
     } catch (error) {}
   };
-  console.log(userworkExperience, "userworkExperience");
 
   function TextRevealCardPreview() {
     return (
@@ -225,17 +224,24 @@ const UserProfilePage = () => {
 
               <div className="flex flex-wrap items-center gap-9 relative z-[300]">
                 {/* <div className=" w-[185px] h-[180px] bg-white-100 rounded-full"> */}
-                <Image
-                  src={
-                    profileData?.profilePicture
-                      ? profileData?.profilePicture
-                      : "/profile-img.jpg"
-                  }
-                  alt="profile-img"
-                  width={185}
-                  height={185}
-                  className="rounded-full w-[185px] h-[180px] object-cover"
-                />
+                {profileData?.profilePicture ? (
+                  <Image
+                    src={profileData?.profilePicture}
+                    alt="profile-img"
+                    width={185}
+                    height={185}
+                    className="rounded-full w-[185px] h-[180px] object-cover"
+                  />
+                ) : (
+                  <Image
+                    src="/profile-img.jpg"
+                    alt="profile-img"
+                    width={185}
+                    height={185}
+                    className="rounded-full w-[185px] h-[180px] object-cover"
+                  />
+                )}
+
                 {/* </div> */}
                 <div className="">
                   <h3 className="text-white font-semibold text-[25px] mb-2 italic">

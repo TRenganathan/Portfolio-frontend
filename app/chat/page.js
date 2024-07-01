@@ -1,5 +1,5 @@
 "use client";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Chat } from "./../../components/Chat";
 import { useRouter } from "next/navigation";
 
@@ -12,8 +12,10 @@ import { io } from "socket.io-client";
 import Image from "next/image";
 import { Spotlight } from "../../components/ui/SpotLight";
 import FloatingNavbar from "../../components/ui/FloatingNavbar";
-import { FaArrowLeft } from "react-icons/fa6";
+import { FaArrowLeft, FaPhone, FaPhoneSlash } from "react-icons/fa6";
 import userContext from "../../lib/context/userContext";
+import Peer from "peerjs";
+import { IconButton } from "@mui/material";
 const socket = io(`${BASE_URL1}`, {
   withCredentials: true,
 });
@@ -101,6 +103,124 @@ const ChatPage = () => {
       };
     }
   }, [userData]);
+
+  // VIDEO CHAT
+  const [peerId, setPeerId] = useState("");
+  const [callDetails, setCallDetails] = useState(null);
+  const remoteVideoRef = useRef(null);
+  const currentUserVideoRef = useRef(null);
+  const peerInstance = useRef(null);
+  const [isCallActive, setIsCallActive] = useState(false);
+  useEffect(() => {
+    const peer = new Peer();
+
+    peer.on("open", (id) => {
+      setPeerId(id);
+      console.log(
+        `Registering peer ID: ${id} in chatroom: ${activeChatroomId}`
+      );
+      socket.emit("join-chatroom", {
+        userId: userData.userId,
+        peerId: id,
+        chatroomId: activeChatroomId,
+      });
+    });
+
+    peer.on("call", (call) => {
+      navigator.mediaDevices
+        .getUserMedia({ video: true, audio: true })
+        .then((mediaStream) => {
+          currentUserVideoRef.current.srcObject = mediaStream;
+          currentUserVideoRef.current.play();
+          call.answer(mediaStream);
+          call.on("stream", (remoteStream) => {
+            remoteVideoRef.current.srcObject = remoteStream;
+            // remoteVideoRef.current.play();
+          });
+        });
+      setIsCallActive(true);
+    });
+
+    peerInstance.current = peer;
+
+    socket.on("incoming-call", ({ fromPeerId }) => {
+      console.log(`Incoming call from peer ID: ${fromPeerId}`);
+      setCallDetails({ fromPeerId });
+    });
+
+    return () => {
+      socket.off("incoming-call");
+    };
+  }, [activeChatroomId, userData.userId]);
+
+  const startCall = () => {
+    console.log(`Initiating call in chatroom: ${activeChatroomId}`);
+    socket.emit("initiate-call", { chatroomId: activeChatroomId });
+  };
+
+  const answerCall = () => {
+    if (callDetails) {
+      navigator.mediaDevices
+        .getUserMedia({ video: true, audio: true })
+        .then((mediaStream) => {
+          currentUserVideoRef.current.srcObject = mediaStream;
+          currentUserVideoRef.current.play();
+          const call = peerInstance.current.call(
+            callDetails.fromPeerId,
+            mediaStream
+          );
+          call.on("stream", (remoteStream) => {
+            remoteVideoRef.current.srcObject = remoteStream;
+            remoteVideoRef.current.play();
+          });
+        });
+      setIsCallActive(true);
+      setCallDetails(null);
+    }
+  };
+  const hangUpCall = () => {
+    if (currentUserVideoRef.current && currentUserVideoRef.current.srcObject) {
+      currentUserVideoRef.current.srcObject
+        .getTracks()
+        .forEach((track) => track.stop());
+      currentUserVideoRef.current.srcObject = null;
+    }
+
+    if (remoteVideoRef.current && remoteVideoRef.current.srcObject) {
+      remoteVideoRef.current.srcObject
+        .getTracks()
+        .forEach((track) => track.stop());
+      remoteVideoRef.current.srcObject = null;
+    }
+
+    if (peerInstance.current) {
+      peerInstance.current.destroy();
+      peerInstance.current = new Peer(); // Create a new Peer instance for future calls
+      peerInstance.current.on("open", (id) => {
+        setPeerId(id);
+        socket.emit("join-chatroom", {
+          userId: userData.userId,
+          peerId: id,
+          chatroomId: activeChatroomId,
+        });
+      });
+      peerInstance.current.on("call", (call) => {
+        navigator.mediaDevices
+          .getUserMedia({ video: true, audio: true })
+          .then((mediaStream) => {
+            currentUserVideoRef.current.srcObject = mediaStream;
+            currentUserVideoRef.current.play();
+            call.answer(mediaStream);
+            call.on("stream", (remoteStream) => {
+              remoteVideoRef.current.srcObject = remoteStream;
+              remoteVideoRef.current.play();
+            });
+          });
+      });
+    }
+    setIsCallActive(false);
+    setCallDetails(null);
+  };
   return (
     <div className="relative   overflow-hidden mx-auto sm:px-10 px-5 p-10">
       <Spotlight
@@ -118,7 +238,7 @@ const ChatPage = () => {
          bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]"
         />
       </div>
-      <FloatingNavbar />
+      {/* <FloatingNavbar /> */}
       <div className="wrapper mt-10 p-10">
         <div className="m-auto max-w-[1000px]">
           <button
@@ -190,64 +310,111 @@ const ChatPage = () => {
                     </div>
                   ))}
             </div>
-            <div className="chatBox bg-[#23262f]  p-[15px] rounded  mt-5 flex-auto relative h-[650px] overflow-y-auto">
+            <div className="chatBox bg-[#23262f]  p-[15px] rounded  mt-5 flex-auto relative h-[650px] overflow-y-auto ">
               {currentChatUser ? (
                 <>
-                  <div className="curor-pointer flex flex-wrap gap-2 items-center my-2 border-b-2 border-r-white border-white-100 p-4 bg-[#3b3e46] rounded">
-                    {currentChatUser?.profile?.profilePicture ? (
-                      <Image
-                        src={`${BASE_URL1}/${currentChatUser?.profile?.profilePicture}`}
-                        alt="profile-img"
-                        height={50}
-                        width={50}
-                        className="rounded-full w-[50px] h-[50px] object-cover"
-                      />
-                    ) : (
-                      <div className="w-[50px] h-[50px] rounded-full bg-white-200 flex items-center justify-center">
-                        <span>{currentChatUser.name.charAt(0)}</span>
+                  <div className="curor-pointer  flex-wrap gap-2  my-2 border-b-2 border-r-white border-white-100 p-4 bg-[#3b3e46] rounded flex justify-between items-center">
+                    <div className="flex items-center gap-2">
+                      {currentChatUser?.profile?.profilePicture ? (
+                        <Image
+                          src={`${BASE_URL1}/${currentChatUser?.profile?.profilePicture}`}
+                          alt="profile-img"
+                          height={50}
+                          width={50}
+                          className="rounded-full w-[50px] h-[50px] object-cover"
+                        />
+                      ) : (
+                        <div className="w-[50px] h-[50px] rounded-full bg-white-200 flex items-center justify-center">
+                          <span>{currentChatUser.name.charAt(0)}</span>
+                        </div>
+                      )}
+                      <div className="">
+                        <h6 className="font-bold text-[14px] text-white">
+                          {currentChatUser.name}
+                        </h6>
+                      </div>
+                    </div>
+                    <div>
+                      <IconButton onClick={() => startCall()}>
+                        <FaPhone style={{ color: "green" }} />
+                      </IconButton>
+                      {isCallActive && (
+                        <IconButton onClick={hangUpCall}>
+                          <FaPhoneSlash style={{ color: "red" }} />
+                        </IconButton>
+                      )}
+                    </div>
+
+                    {callDetails && (
+                      <div>
+                        {/* <h2>Incoming call from {callDetails?.fromPeerId}</h2> */}
+                        <button
+                          className="bg-[#66ec39] p-1 text-white flex gap-2 rounded-md items-center"
+                          onClick={answerCall}
+                        >
+                          Answer <FaPhone style={{ color: "green" }} />
+                        </button>
                       </div>
                     )}
-                    <div className="">
-                      <h6 className="font-bold text-[14px] text-white">
-                        {currentChatUser.name}
-                      </h6>
-                    </div>
                   </div>
-                  <div className="chat-window h-[63%] bg-[#3b3b3b7a] rounded overflow-y-auto p-3">
-                    {messages?.map((msg, index) => (
-                      <div
-                        key={index}
-                        className={
-                          msg.userId === userData?.userId
-                            ? "my-message"
-                            : msg.user === userData?.userId
-                            ? "my-message"
-                            : "other-message"
-                        }
+                  <div className="chat-window h-[63%] bg-[#3b3b3b7a] rounded overflow-y-auto p-3 relative">
+                    <div style={{ display: isCallActive ? "block" : "none" }}>
+                      <video
+                        ref={currentUserVideoRef}
+                        autoPlay
+                        muted
+                        style={{ maxWidth: "300px" }}
+                      />
+                      <video
+                        ref={remoteVideoRef}
+                        autoPlay
                         style={{
-                          marginLeft:
-                            msg.userId === userData?.userId
-                              ? "auto"
-                              : msg.user === userData?.userId
-                              ? "auto"
-                              : "",
-                          marginRight:
-                            msg.userId === userData?.userId
-                              ? ""
-                              : msg.user === userData?.userId
-                              ? ""
-                              : "auto",
-                          maxWidth: "50%",
-                          background: "#23262f",
-                          marginBottom: "10px",
-                          borderRadius: "14px",
-                          padding: "9px 12px",
-                          wordBreak: "break-word",
+                          maxWidth: "150px",
+                          border: "1px solid red",
+                          position: "absolute",
+                          right: "0",
+                          top: "0",
                         }}
-                      >
-                        {msg.message}
-                      </div>
-                    ))}
+                      />
+                    </div>
+                    {!isCallActive && (
+                      <>
+                        {messages?.map((msg, index) => (
+                          <div
+                            key={index}
+                            className={
+                              msg.userId === userData?.userId
+                                ? "my-message"
+                                : msg.user === userData?.userId
+                                ? "my-message"
+                                : "other-message"
+                            }
+                            style={{
+                              marginLeft:
+                                msg.userId === userData?.userId
+                                  ? "auto"
+                                  : msg.user === userData?.userId
+                                  ? "auto"
+                                  : "",
+                              marginRight:
+                                msg.userId === userData?.userId
+                                  ? ""
+                                  : msg.user === userData?.userId
+                                  ? ""
+                                  : "auto",
+                              maxWidth: "50%",
+                              background: "#23262f",
+                              marginBottom: "10px",
+                              borderRadius: "14px",
+                              padding: "9px 12px",
+                              wordBreak: "break-word",
+                            }}
+                          >
+                            {msg.message}
+                          </div>
+                        ))}
+                      </>
+                    )}
                   </div>
                   <div className="absolute bottom-2 w-full left-0">
                     <Chat getRecentChats={getRecentChats} />

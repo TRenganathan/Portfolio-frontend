@@ -140,6 +140,10 @@ const UsersList = () => {
 
                 <div className=" mb-4">
                   <div className="mb-4">
+                    {console.log(
+                      `${BASE_URL1}/${user?.profile?.profilePicture}`,
+                      "kkkkkk"
+                    )}
                     {user?.profile?.profilePicture ? (
                       <Image
                         src={`${BASE_URL1}/${user?.profile?.profilePicture}`}
