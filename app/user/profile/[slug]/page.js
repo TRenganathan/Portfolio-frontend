@@ -10,7 +10,13 @@ import ProfileForm from "./../../../../components/ProfileModel";
 import { getDecryptedCookie } from "../../../../lib/cookiesData/cookiesdata";
 import { usePathname } from "next/navigation";
 import axios from "axios";
-import { BASE_URL, BASE_URL1 } from "../../../../data";
+import {
+  aboutMe,
+  BASE_URL,
+  BASE_URL1,
+  projects,
+  workExperience,
+} from "../../../../data";
 import { IoPlayBackCircleOutline } from "react-icons/io5";
 
 import Image from "next/image";
@@ -33,7 +39,7 @@ const UserProfilePage = () => {
   const userIdFromPath = pathname?.split("/user/profile/")[1];
 
   const [profileImage, setProfileImage] = useState(null);
-  const [name, setName] = useState(userData?.name || "");
+  const [name, setName] = useState(userData?.name || "hello");
   const [email, setEmail] = useState(userData?.email || "");
   const [phone, setPhone] = useState(userData?.phone || "");
   const [role, setRole] = useState(userData?.role || "");
@@ -96,18 +102,35 @@ const UserProfilePage = () => {
 
   useEffect(() => {
     if (profileData) {
-      setName(profileData.name);
-      setEmail(profileData.email);
-      setPhone(profileData.phone);
-      setRole(profileData.role);
-      setCurrentCTC(profileData.currentCTC);
-      setExpectedCTC(profileData.expectedCTC);
-      setTotalExperience(profileData.totalExperience);
-      setTotalProjects(profileData.totalProjects);
-      setProfileImage(profileData?.profilePicture);
-      setMyInfo(profileData?.myInfo);
+      setName(profileData?.name || userData?.name);
+      setEmail(profileData?.email || userData?.username);
+      setPhone(profileData?.phone || userData?.phone);
+      setRole(profileData?.role || userData?.role);
+      setCurrentCTC(profileData?.currentCTC || userData?.currentCTC);
+      setExpectedCTC(profileData?.expectedCTC || userData?.expectedCTC);
+      setTotalExperience(
+        profileData?.totalExperience || userData?.totalExperience
+      );
+      setTotalProjects(profileData?.totalProjects || userData?.totalProjects);
+      setProfileImage(profileData?.profilePicture || userData?.profilePicture);
+      setMyInfo(profileData?.myInfo || userData?.myInfo);
     }
   }, [profileData, open]);
+  useEffect(() => {
+    if (userData) {
+      console.log(resumeURLforDownload, "userDaa");
+      setName(userData.name || "");
+      setEmail(userData?.email || userData?.username);
+      setPhone(userData?.phone || "");
+      setRole(userData?.role || "");
+      setCurrentCTC(userData?.currentCTC || "");
+      setExpectedCTC(userData?.expectedCTC || "");
+      setTotalExperience(userData?.totalExperience || "");
+      setTotalProjects(userData?.totalProjects || "");
+      setProfileImage(userData?.profilePicture || "");
+      setMyInfo(userData?.myInfo || "");
+    }
+  }, []);
   const handleClickOpen = () => {
     if (userIdFromPath) {
       getProfile();
@@ -204,7 +227,7 @@ const UserProfilePage = () => {
                   />
                 </svg>
               </div>
-              <Meteors number={40} />
+              {/* <Meteors number={40} /> */}
               <div className="flex flex-wrap gap-2 justify-between items-center mb-4 w-full">
                 <div className="flex items-center">
                   <span className="bg-[#4beabe] block py-2 h-[35px] w-[8px] mr-[20px] rounded-sm"></span>
@@ -212,14 +235,24 @@ const UserProfilePage = () => {
                     My Details
                   </h1>
                 </div>
-
-                <button
-                  onClick={handleDownload}
-                  className="bg-[#4beabe] text-white-600 rounded py-[10px] px-[20px] flex gap-1 italic"
-                >
-                  <MdOutlineFileDownload style={{ fontSize: "20px" }} />
-                  Download Resume
-                </button>
+                {resumeURLforDownload ? (
+                  <button
+                    onClick={handleDownload}
+                    className="bg-[#4beabe] text-white-600 rounded py-[10px] px-[20px] flex gap-1 italic"
+                  >
+                    <MdOutlineFileDownload style={{ fontSize: "20px" }} />
+                    Download Resume
+                  </button>
+                ) : (
+                  <a
+                    href="/Renganathan_Resume.pdf"
+                    download
+                    className="bg-[#4beabe] text-white-600 rounded py-[10px] px-[20px] flex gap-1 italic"
+                  >
+                    <MdOutlineFileDownload style={{ fontSize: "20px" }} />
+                    <button>Download Resume</button>
+                  </a>
+                )}
               </div>
 
               <div className="flex flex-wrap items-center gap-9 relative z-[300]">
@@ -234,7 +267,7 @@ const UserProfilePage = () => {
                   />
                 ) : (
                   <Image
-                    src="/profile-img.jpg"
+                    src="/photo.jpg"
                     alt="profile-img"
                     width={185}
                     height={185}
@@ -249,7 +282,7 @@ const UserProfilePage = () => {
                       ? profileData?.name
                       : userData?.name
                       ? userData?.name
-                      : "Name"}
+                      : "Renganathan T"}
                   </h3>
                   <div className="flex flex-wrap gap-[35px]">
                     <div>
@@ -257,7 +290,9 @@ const UserProfilePage = () => {
                         Role
                       </span>
                       <h4 className="text-[20px] font-bold italic">
-                        {profileData?.role ? profileData?.role : "-"}
+                        {profileData?.role
+                          ? profileData?.role
+                          : "MERN Stack Developer"}
                       </h4>
                     </div>
                     <div>
@@ -265,7 +300,7 @@ const UserProfilePage = () => {
                         Phone Number
                       </span>
                       <h4 className="text-[20px] font-bold italic">
-                        {profileData?.phone ? profileData.phone : "-"}
+                        {profileData?.phone ? profileData.phone : "9159912181"}
                       </h4>
                     </div>
                     <div>
@@ -277,7 +312,7 @@ const UserProfilePage = () => {
                           ? profileData?.email
                           : userData?.email
                           ? userData?.email
-                          : "-"}
+                          : "trnathan98@gmail.com"}
                       </h4>
                     </div>
                   </div>
@@ -292,7 +327,7 @@ const UserProfilePage = () => {
                     <MdWork style={{ color: "#afb0b1" }} />{" "}
                     {profileData?.totalExperience
                       ? profileData?.totalExperience
-                      : "-"}
+                      : "3 Years"}
                   </div>
                 </div>
                 <div className="bg-[#37393d] p-4 w-max rounded-[20px] min-w-[290px]">
@@ -303,7 +338,9 @@ const UserProfilePage = () => {
                     <FaProjectDiagram style={{ color: "#afb0b1" }} />{" "}
                     {profileData.totalProjects
                       ? profileData.totalProjects
-                      : "- "}
+                      : projects?.length
+                      ? projects.length
+                      : "-"}
                     {" Projects"}
                   </div>
                 </div>
@@ -313,7 +350,9 @@ const UserProfilePage = () => {
                   </span>
                   <div className="flex gap-2 flex-wrap items-center text-md">
                     <RiMoneyRupeeCircleFill style={{ color: "#afb0b1" }} />{" "}
-                    {profileData?.currentCTC ? profileData?.currentCTC : "-"}
+                    {profileData?.currentCTC
+                      ? profileData?.currentCTC
+                      : "2,60,000"}
                   </div>
                 </div>
                 <div className="bg-[#37393d] p-4 w-max rounded-[20px] min-w-[290px]">
@@ -321,8 +360,10 @@ const UserProfilePage = () => {
                     Expected CTC
                   </span>
                   <div className="flex gap-2 flex-wrap items-center text-md">
-                    <RiMoneyRupeeCircleFill style={{ color: "#afb0b1" }} /> 5
-                    {profileData?.expectedCTC ? profileData?.expectedCTC : "-"}
+                    <RiMoneyRupeeCircleFill style={{ color: "#afb0b1" }} />
+                    {profileData?.expectedCTC
+                      ? profileData?.expectedCTC
+                      : "5 LPA"}
                   </div>
                 </div>
               </div>
@@ -342,12 +383,12 @@ const UserProfilePage = () => {
               </h1>
             </div>
             <p className="text-white text-[16px] pl-[27px]">
-              {profileData?.myInfo}
+              {profileData?.myInfo ? profileData.myInfo : aboutMe}
             </p>
           </div>
         </div>
       </div>
-      {TextRevealCardPreview()}
+      {/* {TextRevealCardPreview()} */}
       <div
         id="myexperience"
         className="bg-[rgb(17 17 18)] [background-image:radial-gradient(88%_100%_at_top,rgba(255,255,255,0.5),rgba(255,255,255,0))]  p-[30px] rounded-3xl m-8 "
@@ -359,34 +400,61 @@ const UserProfilePage = () => {
           </h1>
         </div>
 
-        {userworkExperience &&
-          userworkExperience.map((ex, index) => (
-            <div className="" key={index}>
-              <div className="flex flex-wrap gap-2 justify-between items-start mt-[25px]">
-                <div>
-                  <h3 className="text-[#afb0b1] font-sm font-semibold text-[22px] italic mb-[10px] inline-block ">
-                    {" "}
-                    {ex.title}
-                  </h3>
-                  <div className="flex flex-wrap gap-3 items-center">
-                    <FaLocationDot />
-                    <h4 className="text-purple font-medium text-[16px]">
-                      {ex.companyName} - {ex.location}
-                    </h4>
+        {userworkExperience?.length > 0
+          ? userworkExperience.map((ex, index) => (
+              <div className="" key={index}>
+                <div className="flex flex-wrap gap-2 justify-between items-start mt-[25px]">
+                  <div>
+                    <h3 className="text-[#afb0b1] font-sm font-semibold text-[22px] italic mb-[10px] inline-block ">
+                      {" "}
+                      {ex.title}
+                    </h3>
+                    <div className="flex flex-wrap gap-3 items-center">
+                      <FaLocationDot />
+                      <h4 className="text-purple font-medium text-[16px]">
+                        {ex.companyName} - {ex.location}
+                      </h4>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 flex-wrap text-purple">
+                    <IoMdTime />
+                    {ex.duration}
                   </div>
                 </div>
-                <div className="flex items-center gap-3 flex-wrap text-purple">
-                  <IoMdTime />
-                  {ex.duration}
+                <div className="pt-6">
+                  <p className="text-white text-[16px] pl-[27px] pb-3">
+                    {ex.description}
+                  </p>{" "}
                 </div>
               </div>
-              <div className="pt-6">
-                <p className="text-white text-[16px] pl-[27px] pb-3">
-                  {ex.description}
-                </p>{" "}
+            ))
+          : workExperience?.map((ex, index) => (
+              <div className="" key={index}>
+                <div className="flex flex-wrap gap-2 justify-between items-start mt-[25px]">
+                  <div>
+                    <h3 className="text-[#afb0b1] font-sm font-semibold text-[22px] italic mb-[10px] inline-block ">
+                      {" "}
+                      {ex.title}
+                    </h3>
+                    <div className="flex flex-wrap gap-3 items-center">
+                      <FaLocationDot />
+                      <h4 className="text-purple font-medium text-[16px]">
+                        {ex.companyName} - {ex.location}
+                      </h4>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 flex-wrap text-purple">
+                    <IoMdTime />
+                    {ex.duration}
+                  </div>
+                </div>
+                <div className="pt-6">
+                  <p className="text-white text-[16px] pl-[27px] pb-3">
+                    {ex.description}
+                  </p>{" "}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
       </div>
 
       <ProfileForm

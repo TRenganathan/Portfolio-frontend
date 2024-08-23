@@ -77,6 +77,9 @@ const FloatingNavbar = () => {
     setOpen(true);
   };
   const handleNavigateProfilePage = () => {
+    if (!userData || !session?.data) {
+      router.push(`/user/profile/ranganathan`);
+    }
     if (session?.user) {
       router.push(`/user/profile/${session?.user.userId}`);
     } else if (userData) {
@@ -144,6 +147,35 @@ const FloatingNavbar = () => {
               setActive={setActive}
               active={active}
               item={userData?.name.charAt(0).toLocaleUpperCase()}
+              image={userData?.image ? userData?.image : null}
+              menuStyle={menuStyle}
+            >
+              <div className="flex flex-col space-y-4 text-sm">
+                <button
+                  className="flex justify-start"
+                  onClick={handleNavigateProfilePage}
+                >
+                  Profile
+                </button>
+                <HoveredLink href="/" onClick={logOut}>
+                  Logout
+                </HoveredLink>
+                <HoveredLink href="javascript:void(0)">Resume</HoveredLink>
+                {userData &&
+                  userData.provider == "google" &&
+                  userData?.userId == userIdFromPath && (
+                    <button onClick={addPassword}>Add password</button>
+                  )}
+              </div>
+            </MenuItem>
+          </Menu>
+        )}
+        {pathname == "/" && (
+          <Menu setActive={setActive}>
+            <MenuItem
+              setActive={setActive}
+              active={active}
+              item={"R"}
               image={userData?.image ? userData?.image : null}
               menuStyle={menuStyle}
             >

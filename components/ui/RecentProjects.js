@@ -100,11 +100,13 @@ function RecentProjects() {
   };
   return (
     <div className="py-20 relative" id="projects">
-      <h2 className="heading">
-        {" "}
-        A small selection of{" "}
-        <span className="text-purple">recent projects</span>
-      </h2>
+      {userProjects?.length && (
+        <h2 className="heading">
+          {" "}
+          A small selection of{" "}
+          <span className="text-purple">recent projects</span>
+        </h2>
+      )}
 
       {userData && userData?.userId == userIdFromPath && (
         <button

@@ -178,7 +178,7 @@ const Experience = () => {
                       <span>{card.duration ? card.duration : "-"}</span>
                     </div>
                   </div>
-                  <p className="text-start text-white-100 mt-3 font-semibold">
+                  <p className="text-start text-white-100 mt-3 font-semibold line-clamp-3">
                     {card.description}
                   </p>
                 </div>
